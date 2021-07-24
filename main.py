@@ -1,14 +1,15 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
-from ml_utils import load_model, predict
+from ml_utils import load_model, predict, load_model2, predict2
+from datetime import datetime
 
 app = FastAPI(
     title="Iris Predictor",
     docs_url="/"
 )
 
-app.add_event_handler("startup", load_model)
+app.add_event_handler("startup", load_model2)
 
 class QueryIn(BaseModel):
     sepal_length: float
@@ -29,8 +30,9 @@ def ping():
 def predict_flower(
     query_data: QueryIn
 ):
-    output = {'flower_class': predict(query_data)}
+    timeNow = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
+    output = {'flower_class': predict2(query_data), 'timeStamp': timeNow}
     return output
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host='0.0.0.0', port=8888, reload=True)
+    uvicorn.run("main:app", host='127.0.0.1', port=8887, reload=True)
